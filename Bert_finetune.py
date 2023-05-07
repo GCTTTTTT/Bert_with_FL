@@ -40,6 +40,7 @@ class BertClassifier(torch.nn.Module):
         super(BertClassifier,self).__init__()
         
         self.bert=BertModel.from_pretrained("bert-base-cased")
+        # self.bert=BertModel.from_pretrained("./bert_model/bert-base-cased")
         self.dropout = torch.nn.Dropout(dropout)
         # bert output a vector of size 768
         self.lin = torch.nn.Linear(768,5)
@@ -136,6 +137,7 @@ if __name__ == '__main__':
     df = pd.read_csv(source_url)
 
     tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
+    # tokenizer = BertTokenizer.from_pretrained("./bert_model/bert-base-cased/vocab.txt")
     bert_input  = tokenizer(sample,padding="max_length",max_length=15,truncation=True,return_tensors="pt")
 
     print(bert_input["input_ids"])

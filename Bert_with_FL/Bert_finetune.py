@@ -60,6 +60,8 @@ class BertClassifier(torch.nn.Module):
 def train(model, train_data, val_data, learning_rate, epochs=5):
     #creating a custom Dataset objects using the training and validation data
     train, val = Dataset(train_data), Dataset(val_data)
+    # print(val.texts)
+    # print(val.labels)
     #creating dataloaders
     train_dataloader = torch.utils.data.DataLoader(train, batch_size=2, shuffle=True)
     val_dataloader = torch.utils.data.DataLoader(val, batch_size=2)
@@ -132,7 +134,7 @@ def train(model, train_data, val_data, learning_rate, epochs=5):
                 | Val Accuracy: {total_acc_val / len(val_data): .3f}')
 
 if __name__ == '__main__':
-    source_url = "./bbc-text.csv"
+    source_url = "./data/bbc-text.csv"
     df = pd.read_csv(source_url)
 
     tokenizer = BertTokenizer.from_pretrained("bert-base-cased")
