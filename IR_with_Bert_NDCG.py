@@ -1,5 +1,4 @@
 # 预训练Bert + cos + NDCG
-# 能跑！
 import math
 import pandas as pd
 import numpy as np

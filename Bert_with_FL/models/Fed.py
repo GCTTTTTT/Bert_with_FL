@@ -8,10 +8,10 @@ from torch import nn
 
 
 def FedAvg(args,w):
-    print("w_type:", type(w))
+    # print("w_type:", type(w))
     w_avg = copy.deepcopy(w[0])
     # w_avg.to(args.device)
-    print("w_avg_type:",type(w_avg))
+    # print("w_avg_type:",type(w_avg))
     # print("w_avg_type:",type(w[1][k]))
     for k in w_avg.keys():
         # !! 将w[i][k] 和 w_avg[k]放到指定设备，否则会报错

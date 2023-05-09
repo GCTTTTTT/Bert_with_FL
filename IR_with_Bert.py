@@ -1,7 +1,7 @@
-# 能用！使用bert-base-uncased
+# 使用bert-base-uncased
 # 用余弦相似度评估文本相似度
 # 用MAP来评估检索结果
-# 代码是只测试前100条，用全部的话需要很长时间
+# 代码是只测试前100条
 # 加载依赖项
 import math
 

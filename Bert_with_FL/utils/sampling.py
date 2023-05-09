@@ -148,5 +148,11 @@ if __name__ == '__main__':
 # todo:格式不一样，
 #     d1格式:{num1: array([id1,id2..], dtype=int64),num2: array([id1,id2..], dtype=int64)..}
 #     d2格式：{num1:{id1,id2..},num2:{id1,id2..}}
-    print(d1)
+    print(type(d1))
+    print(type(d1[0]))
+    print(d1[0])
     print(d2)
+    print(type(d2))
+    print(type(d2[0]))
+    print(np.array(list(d2[0])))
+    print(type(np.array(list(d2[0]))))

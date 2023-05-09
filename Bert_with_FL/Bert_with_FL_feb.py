@@ -227,7 +227,8 @@ if __name__ == '__main__':
         for idx in idxs_users:
             # local = LocalUpdate(args=args, dataset=train_dataloader, idxs=dict_users[idx])
             # local = LocalUpdate_Bert(args=args, dataset=train_dataloader, idxs=dict_users[idx])
-            local = LocalUpdate_Bert(args=args, dataset=train, idxs=dict_users[idx])
+            # local = LocalUpdate_Bert(args=args, dataset=train, idxs=dict_users[idx])
+            local = LocalUpdate_Bert(args=args, dataset=train, val_data=val,idxs=dict_users[idx]) # todo
             w, loss = local.train(net=copy.deepcopy(net_glob).to(args.device))
             if args.all_clients:
                 w_locals[idx] = copy.deepcopy(w)

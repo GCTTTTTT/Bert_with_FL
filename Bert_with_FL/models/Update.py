@@ -43,6 +43,7 @@ class DatasetSplit_BBC(Dataset):
 
 class LocalUpdate(object):
     def __init__(self, args, dataset=None, idxs=None):
+
         self.args = args
         self.loss_func = nn.CrossEntropyLoss()
         self.selected_clients = []
@@ -74,25 +75,48 @@ class LocalUpdate(object):
 
 
 class LocalUpdate_Bert(object):
-    def __init__(self, args, dataset=None, idxs=None):
+    def __init__(self, args, dataset=None, val_data=None,idxs=None):
         self.args = args
+        self.ds = dataset # todo
+        self.idx = idxs # todo
         self.loss_func = nn.CrossEntropyLoss()
         self.selected_clients = []
         self.ldr_train = DataLoader(DatasetSplit(dataset, idxs), batch_size=self.args.local_bs, shuffle=True)
+        self.ldr_val = DataLoader(DatasetSplit(val_data, idxs), batch_size=self.args.local_bs, shuffle=True)
 
     def train(self, net):
+        # print("len ldr_train",len(self.ldr_train))
+        # print(self.idx)
+        # print("DatasetSplit(self.ds, self.idx):",DatasetSplit(self.ds, self.idx))
+        # print("DatasetSplit(self.ds, self.idx) len:",DatasetSplit(self.ds, self.idx).__len__())
+        # print("DatasetSplit(self.ds, self.idx) item:",DatasetSplit(self.ds, self.idx).__getitem__(next(iter(self.idx))))
+        # print("DatasetSplit(self.ds, self.idx) item:",DatasetSplit(self.ds, self.idx).__getitem__(0))
+        # for text_batch in iter(self.ldr_train):
+        #     text = text_batch[0]
+        #     text2 = text_batch
+        #     print("text",text)
+        #     print("text2",text2)
         net.train()
         # train and update
         optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=self.args.momentum)
 
         epoch_loss = []
-        for iter in range(self.args.local_ep):
+        epoch_acc = []
+
+        for iter1 in range(self.args.local_ep):
             batch_loss = []
+            batch_acc = []
+# todo
+            total_acc_train = 0
+            total_loss_train = 0
+
             # for batch_idx, (images, labels) in enumerate(self.ldr_train):
             for batch_idx, (train_input, train_label) in enumerate(self.ldr_train):
             # for train_input, train_label in tqdm(train_dataloader):
             #     images, labels = images.to(self.args.device), labels.to(self.args.device)
 
+                # print("train_input",train_input)
+                # print("train_input",train_label)
                 train_label = train_label.to(self.args.device)
                 mask = train_input['attention_mask'].to(self.args.device)
                 input_id = train_input['input_ids'].squeeze(1).to(self.args.device)
@@ -106,24 +130,40 @@ class LocalUpdate_Bert(object):
                 # loss = self.loss_func(log_probs, labels)
                 loss = self.loss_func(output, train_label)
 
+                total_loss_train += loss.item() # todo
+
                 # total_loss_train += batch_loss.item()
-                # acc = (output.argmax(dim=1) == train_label).sum().item()
-                # total_acc_train += acc
+                acc = (output.argmax(dim=1) == train_label).sum().item() # todo
+                # print("acc:",acc,"    batch_idx:",batch_idx)
+                total_acc_train += acc
+                # print("total_acc_train:", acc, "    batch_idx:", batch_idx)
                 net.zero_grad()
                 loss.backward()
                 optimizer.step()
 
-                if self.args.verbose and batch_idx % 10 == 0:
-                    print("111111111111111111")
+                if self.args.verbose and batch_idx % 2 == 0:
+                # if self.args.verbose:
+                    # print("111111111111111111")
                     # print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
                     #     iter, batch_idx * len(images), len(self.ldr_train.dataset),
                     #            100. * batch_idx / len(self.ldr_train), loss.item()))
                     print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                        iter, batch_idx * len(input_id), len(self.ldr_train.dataset),
+                        iter1, batch_idx * len(input_id), len(self.ldr_train.dataset),
                               100. * batch_idx / len(self.ldr_train), loss.item()))
                     print(
-                        f'Epochs: {iter} | Train Loss: {loss.item(): .3f} '
+                        f'Epochs: {iter1} | Train Loss: {loss.item(): .3f} '
                         )
+
                 batch_loss.append(loss.item())
+                batch_acc.append(acc)
+
+            # print("total_acc_train",total_acc_train,"  iter:",iter1)
+            # print("total_acc_train / len(self.idx)",total_acc_train / len(self.idx))
+
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
+            # print("batch_acc: ",batch_acc)
+            # print("len batch_acc: ",len(batch_acc))
+            # epoch_acc.append(sum(batch_acc)/len(self.idx))
+        # print("epoch_acc: ",epoch_acc)
+        # print("epoch_acc: ",sum(epoch_acc) / len(epoch_acc))
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
