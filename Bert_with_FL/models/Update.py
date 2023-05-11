@@ -99,7 +99,8 @@ class LocalUpdate_Bert(object):
         #     print("text2",text2)
         net.train()
         # train and update
-        optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=self.args.momentum)
+        # optimizer = torch.optim.SGD(net.parameters(), lr=self.args.lr, momentum=self.args.momentum)
+        optimizer = torch.optim.Adam(net.parameters(), lr=self.args.lr) # SGD--->Adam
 
         epoch_loss = []
         epoch_acc = []
