@@ -189,6 +189,8 @@ if __name__ == '__main__':
 
         # 返回的是一个字典类型 dict_users，key值是用户 id，values是用户拥有的文本id。
         dict_users = bbc_iid(train_dataloader, args.num_users)
+        dict_users_val = bbc_iid(val_dataloader, args.num_users) # todo
+        print("dict_users: ",dict_users)
     else:
         exit('Error: unrecognized dataset')
 
@@ -209,6 +211,8 @@ if __name__ == '__main__':
 
     # training
     loss_train = []
+    acc_train_list = [] # todo
+    acc_val_list = [] # todo
     cv_loss, cv_acc = [], []
     val_loss_pre, counter = 0, 0
     net_best = None
@@ -220,21 +224,27 @@ if __name__ == '__main__':
         w_locals = [w_glob for i in range(args.num_users)]
     for iter in range(args.epochs):
         loss_locals = []
+        acc_train_locals = [] # todo
+        acc_val_locals = [] # todo
         if not args.all_clients:
             w_locals = []
         m = max(int(args.frac * args.num_users), 1)
         idxs_users = np.random.choice(range(args.num_users), m, replace=False)
         for idx in idxs_users:
+            print("idx_users: ",idxs_users)
+            print("iter , idx:",iter,idx)
             # local = LocalUpdate(args=args, dataset=train_dataloader, idxs=dict_users[idx])
             # local = LocalUpdate_Bert(args=args, dataset=train_dataloader, idxs=dict_users[idx])
             # local = LocalUpdate_Bert(args=args, dataset=train, idxs=dict_users[idx])
-            local = LocalUpdate_Bert(args=args, dataset=train, val_data=val,idxs=dict_users[idx]) # todo
-            w, loss = local.train(net=copy.deepcopy(net_glob).to(args.device))
+            local = LocalUpdate_Bert(args=args, dataset=train, val_data=val,idxs=dict_users[idx],idxs_val=dict_users_val[idx]) # todo
+            w, loss, acc_train, acc_val = local.train(net=copy.deepcopy(net_glob).to(args.device))
             if args.all_clients:
                 w_locals[idx] = copy.deepcopy(w)
             else:
                 w_locals.append(copy.deepcopy(w))
             loss_locals.append(copy.deepcopy(loss))
+            acc_train_locals.append(copy.deepcopy(acc_train))
+            acc_val_locals.append(copy.deepcopy(acc_val))
         # update global weights
         # w_locals.to(args.device) # todo
         w_glob = FedAvg(args,w_locals)
@@ -242,10 +252,14 @@ if __name__ == '__main__':
         # copy weight to net_glob
         net_glob.load_state_dict(w_glob)
 
-        # print loss
+        # print loss and acc
         loss_avg = sum(loss_locals) / len(loss_locals)
-        print('Round {:3d}, Average loss {:.3f}'.format(iter, loss_avg))
+        acc_train_avg = sum(acc_train_locals) / len(acc_train_locals)
+        acc_val_avg = sum(acc_val_locals) / len(acc_val_locals)
+        print('Round {:3d}, Average loss {:.3f} , Average acc_train {:.3f} ,Average acc_val {:.3f}'.format(iter, loss_avg,acc_train_avg,acc_val_avg))
         loss_train.append(loss_avg)
+        acc_train_list.append(acc_train_avg)
+        acc_val_list.append(acc_val_avg)
 
 
 
