@@ -165,7 +165,7 @@ class LocalUpdate_Bert(object):
                 batch_acc.append(acc)
 
             with torch.no_grad():
-                print("len(self.ldr_val):",len(self.ldr_val))
+                # print("len(self.ldr_val):",len(self.ldr_val))
                 # for batch_idx_val, (val_input, val_label) in enumerate(self.ldr_val):
                 for i, (val_input, val_label) in enumerate(self.ldr_val):
                     val_label = val_label.to(self.args.device)
@@ -187,18 +187,18 @@ class LocalUpdate_Bert(object):
             # print("total_acc_train / len(self.idx)",total_acc_train / len(self.idx))
 
             epoch_loss.append(sum(batch_loss)/len(batch_loss))
-            print("batch_acc: ",batch_acc)
-            print("len idx: ",len(self.idx))
+            # print("batch_acc: ",batch_acc)
+            # print("len idx: ",len(self.idx))
             epoch_acc.append(sum(batch_acc)/len(self.idx))
 
             epoch_loss_val.append(sum(batch_loss_val) / len(batch_loss_val))
-            print("batch_acc_val: ", batch_acc_val)
-            print("len idx val: ", len(self.idx_val))
+            # print("batch_acc_val: ", batch_acc_val)
+            # print("len idx val: ", len(self.idx_val))
             epoch_acc_val.append(sum(batch_acc_val) / len(self.idx_val))
 
-        print("epoch_acc: ",epoch_acc)
-        print("sum(epoch_acc) / len(epoch_acc)： ",sum(epoch_acc) / len(epoch_acc))
-        print("sum(epoch_acc_val) / len(epoch_acc_val)： ",sum(epoch_acc_val) / len(epoch_acc_val))
+        # print("epoch_acc: ",epoch_acc)
+        # print("sum(epoch_acc) / len(epoch_acc)： ",sum(epoch_acc) / len(epoch_acc))
+        # print("sum(epoch_acc_val) / len(epoch_acc_val)： ",sum(epoch_acc_val) / len(epoch_acc_val))
         # return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
         return net.state_dict(), sum(epoch_loss) / len(epoch_loss),sum(epoch_acc) / len(epoch_acc) , sum(epoch_acc_val) / len(epoch_acc_val)
 

@@ -190,7 +190,7 @@ if __name__ == '__main__':
         # 返回的是一个字典类型 dict_users，key值是用户 id，values是用户拥有的文本id。
         dict_users = bbc_iid(train_dataloader, args.num_users)
         dict_users_val = bbc_iid(val_dataloader, args.num_users) # todo
-        print("dict_users: ",dict_users)
+        # print("dict_users: ",dict_users)
     else:
         exit('Error: unrecognized dataset')
 
@@ -231,8 +231,8 @@ if __name__ == '__main__':
         m = max(int(args.frac * args.num_users), 1)
         idxs_users = np.random.choice(range(args.num_users), m, replace=False)
         for idx in idxs_users:
-            print("idx_users: ",idxs_users)
-            print("iter , idx:",iter,idx)
+            # print("idx_users: ",idxs_users)
+            # print("iter , idx:",iter,idx)
             # local = LocalUpdate(args=args, dataset=train_dataloader, idxs=dict_users[idx])
             # local = LocalUpdate_Bert(args=args, dataset=train_dataloader, idxs=dict_users[idx])
             # local = LocalUpdate_Bert(args=args, dataset=train, idxs=dict_users[idx])
