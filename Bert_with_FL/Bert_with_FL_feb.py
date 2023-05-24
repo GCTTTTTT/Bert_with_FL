@@ -287,6 +287,10 @@ if __name__ == '__main__':
     print("Training accuracy: {:.2f}".format(acc_train))
     print("Testing accuracy: {:.2f}".format(acc_test))
 
+# 保存模型
+#     torch.save(net_glob.state_dict(), 'bert_model.bin'
+    torch.save(net_glob.state_dict(), './save/bert_model_fed_{}_{}_{}_C{}_iid{}_userNum{}.bin'.format(args.dataset, args.model, args.epochs, args.frac, args.iid,
+                                                         args.num_users))
 
     # EPOCHS = 5
     # model = BertClassifier()
