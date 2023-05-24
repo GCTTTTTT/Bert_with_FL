@@ -187,7 +187,7 @@ class LocalUpdate_Bert(object):
             # print("total_acc_train",total_acc_train,"  iter:",iter1)
             # print("total_acc_train / len(self.idx)",total_acc_train / len(self.idx))
 
-            epoch_loss.append(sum(batch_loss)/len(batch_loss))
+            epoch_loss.append(sum(batch_loss)/len(batch_loss)) # sum(batch_loss)/len(batch_loss)是每个批次的loss
             # print("batch_acc: ",batch_acc)
             # print("len idx: ",len(self.idx))
             epoch_acc.append(sum(batch_acc)/len(self.idx))

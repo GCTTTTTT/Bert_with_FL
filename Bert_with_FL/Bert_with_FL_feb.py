@@ -2,11 +2,13 @@ import copy
 
 import pandas as pd
 import torch
+from matplotlib import pyplot as plt
 from transformers import BertTokenizer
 import numpy as np
 from transformers import BertModel
 from tqdm import tqdm
 
+from models.test import test_Bert
 from models.Fed import FedAvg
 from models.Update import LocalUpdate, LocalUpdate_Bert
 from utils.sampling import bbc_iid
@@ -180,6 +182,10 @@ if __name__ == '__main__':
 
     # creating a custom Dataset objects using the training and validation data
     train, val = Dataset(df_train), Dataset(df_valid)
+
+    # testing
+    test = Dataset(df_test)
+
     # print(val.texts)
     # print(val.labels)
     # creating dataloaders
@@ -233,6 +239,7 @@ if __name__ == '__main__':
         for idx in idxs_users:
             # print("idx_users: ",idxs_users)
             # print("iter , idx:",iter,idx)
+            # print("dict_user[idx]: ",dict_users[idx])
             # local = LocalUpdate(args=args, dataset=train_dataloader, idxs=dict_users[idx])
             # local = LocalUpdate_Bert(args=args, dataset=train_dataloader, idxs=dict_users[idx])
             # local = LocalUpdate_Bert(args=args, dataset=train, idxs=dict_users[idx])
@@ -261,6 +268,24 @@ if __name__ == '__main__':
         acc_train_list.append(acc_train_avg)
         acc_val_list.append(acc_val_avg)
 
+    # plot loss curve
+    plt.figure()
+    plt.plot(range(len(loss_train)), loss_train)
+    plt.ylabel('train_loss')
+    plt.savefig(
+        './save/fed_{}_{}_{}_C{}_iid{}_userNum{}.png'.format(args.dataset, args.model, args.epochs, args.frac, args.iid,args.num_users))
+
+# todo
+    # testing
+    net_glob.eval()
+    # acc_train, loss_train = test_img(net_glob, dataset_train, args)
+    # acc_train, loss_train = test_Bert(net_glob, train, args)
+    acc_train, loss_train = test_Bert(copy.deepcopy(net_glob).to(args.device), train, args)
+    # acc_test, loss_test = test_img(net_glob, dataset_test, args)
+    # acc_test, loss_test = test_Bert(net_glob, test, args)
+    acc_test, loss_test = test_Bert(copy.deepcopy(net_glob).to(args.device), test, args)
+    print("Training accuracy: {:.2f}".format(acc_train))
+    print("Testing accuracy: {:.2f}".format(acc_test))
 
 
     # EPOCHS = 5
