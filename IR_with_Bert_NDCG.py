@@ -5,15 +5,16 @@ import numpy as np
 np.seterr(divide='ignore',invalid='ignore')
 
 df = pd.read_csv("bbc_news.csv", encoding='utf-8')
-df = df[0:100]
+# df = df[0:100]
+df = df[0:5000]
 df['text'] = df[['title','description']].apply(lambda x: ' '.join(x), axis=1)
 
 import torch
 from transformers import BertTokenizer, BertModel
 
 tokenizer = BertTokenizer.from_pretrained('D:/Bert/archive/bert-base-uncased-vocab.txt')
-# model = BertModel.from_pretrained('D:/Bert/archive/bert-base-uncased/bert-base-uncased')
-model = BertModel.from_pretrained('D:/Bert/bbcPretrainedBert')
+model = BertModel.from_pretrained('D:/Bert/archive/bert-base-uncased/bert-base-uncased')
+# model = BertModel.from_pretrained('D:/Bert/bbcPretrainedBert')
 
 def get_bert_embeddings(text):
     encoded_text = tokenizer(text, padding=True, truncation=True, return_tensors='pt')
@@ -57,7 +58,7 @@ def evaluate(query, df, top_k):
 
     # Compute predicted relevance scores
     df = rank_articles(query, df)
-    y_pred = [1 if sim > 0.955 else 0 for sim in df['similarity'].values]
+    y_pred = [1 if sim > 0.5 else 0 for sim in df['similarity'].values]
 
     # Compute NDCG@k for predicted relevance scores
     df['relevance'] = y_pred

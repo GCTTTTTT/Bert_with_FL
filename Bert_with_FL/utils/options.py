@@ -37,5 +37,12 @@ def args_parser():
     parser.add_argument('--verbose', action='store_true', help='verbose print')
     parser.add_argument('--seed', type=int, default=1, help='random seed (default: 1)')
     parser.add_argument('--all_clients', action='store_true', help='aggregation over all clients')
+
+    # FedProx正则化超参数mu
+    parser.add_argument('--mu', type=float, default=0.01, help="mu")
+    # 联邦学习聚合算法
+    parser.add_argument('--fedAlg', type=str, default='fedavg', help="algorithm to agg")
+
+
     args = parser.parse_args()
     return args

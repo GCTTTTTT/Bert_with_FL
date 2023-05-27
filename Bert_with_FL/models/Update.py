@@ -149,18 +149,18 @@ class LocalUpdate_Bert(object):
                 loss.backward()
                 optimizer.step()
 
-                if self.args.verbose and batch_idx % 2 == 0:
-                # if self.args.verbose:
-                    # print("111111111111111111")
-                    # print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                    #     iter, batch_idx * len(images), len(self.ldr_train.dataset),
-                    #            100. * batch_idx / len(self.ldr_train), loss.item()))
-                    print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
-                        iter1, batch_idx * len(input_id), len(self.ldr_train.dataset),
-                              100. * batch_idx / len(self.ldr_train), loss.item()))
-                    print(
-                        f'Epochs: {iter1} | Train Loss: {loss.item(): .3f} '
-                        )
+                # if self.args.verbose and batch_idx % 2 == 0:
+                # # if self.args.verbose:
+                #     # print("111111111111111111")
+                #     # print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                #     #     iter, batch_idx * len(images), len(self.ldr_train.dataset),
+                #     #            100. * batch_idx / len(self.ldr_train), loss.item()))
+                #     print('Update Epoch: {} [{}/{} ({:.0f}%)]\tLoss: {:.6f}'.format(
+                #         iter1, batch_idx * len(input_id), len(self.ldr_train.dataset),
+                #               100. * batch_idx / len(self.ldr_train), loss.item()))
+                #     print(
+                #         f'Epochs: {iter1} | Train Loss: {loss.item(): .3f} '
+                #         )
 
                 batch_loss.append(loss.item())
                 batch_acc.append(acc)
@@ -197,10 +197,18 @@ class LocalUpdate_Bert(object):
             # print("len idx val: ", len(self.idx_val))
             epoch_acc_val.append(sum(batch_acc_val) / len(self.idx_val))
 
+        # todo:test grad_local
+        grad_local = {}
+        for name, param in net.named_parameters():
+            grad_local[name] = param.grad.clone().detach()
+
         # print("epoch_acc: ",epoch_acc)
         # print("sum(epoch_acc) / len(epoch_acc)： ",sum(epoch_acc) / len(epoch_acc))
         # print("sum(epoch_acc_val) / len(epoch_acc_val)： ",sum(epoch_acc_val) / len(epoch_acc_val))
         # return net.state_dict(), sum(epoch_loss) / len(epoch_loss)
-        return net.state_dict(), sum(epoch_loss) / len(epoch_loss),sum(epoch_acc) / len(epoch_acc) , sum(epoch_acc_val) / len(epoch_acc_val)
+        # return net.state_dict(), sum(epoch_loss) / len(epoch_loss),sum(epoch_acc) / len(epoch_acc) , sum(epoch_acc_val) / len(epoch_acc_val)
+
+        # todo:test grad_local
+        return net.state_dict(), sum(epoch_loss) / len(epoch_loss),sum(epoch_acc) / len(epoch_acc) , sum(epoch_acc_val) / len(epoch_acc_val), grad_local
 
 

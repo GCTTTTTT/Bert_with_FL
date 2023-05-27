@@ -98,13 +98,13 @@ def test_Bert(net_g, datatest, args):
     # print("len(data_loader.dataset)：",len(data_loader.dataset))
     # test_loss = sum(batch_loss) / len(batch_loss)
     test_loss = sum(batch_loss) / len(data_loader.dataset)
-    print("test_loss: ",test_loss)
+    # print("test_loss: ",test_loss)
     # print("test_loss2: ",test_loss2)
     # print("batch_acc: ",batch_acc)
     # print("len idx: ",len(self.idx))
     # accuracy = sum(batch_acc) / len(self.idx)
     accuracy = sum(batch_acc) / len(data_loader.dataset)
-    print("accuracy: ",accuracy)
+    # print("accuracy: ",accuracy)
 
 
     # test_loss /= len(data_loader.dataset)
