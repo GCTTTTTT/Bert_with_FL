@@ -294,6 +294,10 @@ if __name__ == '__main__':
 
     # training
     loss_train = []
+    # test plt
+    test_wholeData_acc_list = []
+    train_wholeData_acc_list = []
+    # loss_train = []
     acc_train_list = [] # todo
     acc_val_list = [] # todo
     cv_loss, cv_acc = [], []
@@ -358,10 +362,10 @@ if __name__ == '__main__':
         loss_avg = sum(loss_locals) / len(loss_locals)
         acc_train_avg = sum(acc_train_locals) / len(acc_train_locals)
         acc_val_avg = sum(acc_val_locals) / len(acc_val_locals)
-        print('Round {:3d}, Average loss {:.3f} , Average acc_train {:.3f} ,Average acc_val {:.3f}'.format(iter, loss_avg,acc_train_avg,acc_val_avg))
+        print('Round {:3d}, Average loss {:.5f} , Average acc_train {:.5f} ,Average acc_val {:.5f}'.format(iter, loss_avg,acc_train_avg,acc_val_avg))
         # logger.info('Round {:3d}, Average loss {:.3f} , Average acc_train {:.3f} ,Average acc_val {:.3f}'.format(iter, loss_avg,acc_train_avg,acc_val_avg))
         # logging.info('Round {:3d}, Average loss {:.3f} , Average acc_train {:.3f} ,Average acc_val {:.3f}'.format(iter, loss_avg,acc_train_avg,acc_val_avg))
-        file_log.write('Round {:3d}, Average loss {:.3f} , Average acc_train {:.3f} ,Average acc_val {:.3f}\n'.format(iter, loss_avg,acc_train_avg,acc_val_avg))
+        file_log.write('Round {:3d}, Average loss {:.5f} , Average acc_train {:.5f} ,Average acc_val {:.5f}\n'.format(iter, loss_avg,acc_train_avg,acc_val_avg))
         loss_train.append(loss_avg)
         acc_train_list.append(acc_train_avg)
         acc_val_list.append(acc_val_avg)
@@ -375,21 +379,34 @@ if __name__ == '__main__':
         # acc_test, loss_test = test_img(net_glob, dataset_test, args)
         # acc_test, loss_test = test_Bert(net_glob, test, args)
         acc_test_eval, loss_test_eval = test_Bert(copy.deepcopy(net_glob).to(args.device), test, args)
-        print("Round {:3d},Training accuracy: {:.2f}".format(iter, acc_train_eval))
+        print("Round {:3d},Training accuracy: {:.5f}".format(iter, acc_train_eval))
         # logger.info("Round {:3d},Training accuracy: {:.2f}".format(iter, acc_train_eval))
-        file_log.write("Round {:3d},Training accuracy: {:.2f}\n".format(iter, acc_train_eval))
+        file_log.write("Round {:3d},Training accuracy: {:.5f}\n".format(iter, acc_train_eval))
         # logging.info("Round {:3d},Training accuracy: {:.2f}".format(iter, acc_train_eval))
-        print("Round {:3d},Testing accuracy: {:.2f}".format(iter, acc_test_eval))
+        print("Round {:3d},Testing accuracy: {:.5f}".format(iter, acc_test_eval))
         # logger.info("Round {:3d},Testing accuracy: {:.2f}".format(iter, acc_test_eval))
-        file_log.write("Round {:3d},Testing accuracy: {:.2f}\n".format(iter, acc_test_eval))
+        file_log.write("Round {:3d},Testing accuracy: {:.5f}\n".format(iter, acc_test_eval))
         # logging.info("Round {:3d},Testing accuracy: {:.2f}".format(iter, acc_test_eval))
+
+        test_wholeData_acc_list.append(acc_test_eval)
+        train_wholeData_acc_list.append(acc_train_eval)
 
     # plot loss curve
     plt.figure()
-    plt.plot(range(len(loss_train)), loss_train)
-    plt.ylabel('train_loss')
+    plt.plot(range(len(loss_train)), loss_train, label='loss')
+
+    plt.plot(range(len(test_wholeData_acc_list)), test_wholeData_acc_list, label='test accuracy')
+    plt.plot(range(len(train_wholeData_acc_list)), train_wholeData_acc_list, label='train accuracy')
+
+    # 添加标题和图例
+    plt.title('accuracy and loss tendency')
+    plt.legend()
+
+    plt.xlabel('epoch_num')
+    # plt.ylabel('train_loss')
     plt.savefig(
         './save/fed_dataset_{}_model_{}_epoch_{}_lr_{}_iid{}_userNum{}.png'.format(args.dataset, args.model, args.epochs, args.lr, args.iid,args.num_users))
+
 
 # todo
     # testing
@@ -400,18 +417,18 @@ if __name__ == '__main__':
     # acc_test, loss_test = test_img(net_glob, dataset_test, args)
     # acc_test, loss_test = test_Bert(net_glob, test, args)
     acc_test_eval_gb, loss_test_eval_gb = test_Bert(copy.deepcopy(net_glob).to(args.device), test, args)
-    print("Global Training accuracy: {:.2f}".format(acc_train_eval_gb))
+    print("Global Training accuracy: {:.5f}".format(acc_train_eval_gb))
     # logger.info("Global Training accuracy: {:.2f}".format(acc_train_eval_gb))
-    file_log.write("Global Training accuracy: {:.2f}\n".format(acc_train_eval_gb))
+    file_log.write("Global Training accuracy: {:.5f}\n".format(acc_train_eval_gb))
     # logging.info("Global Training accuracy: {:.2f}".format(acc_train_eval_gb))
-    print("Global Testing accuracy: {:.2f}".format(acc_test_eval_gb))
+    print("Global Testing accuracy: {:.5f}".format(acc_test_eval_gb))
     # logger.info("Global Testing accuracy: {:.2f}".format(acc_test_eval_gb))
-    file_log.write("Global Testing accuracy: {:.2f}\n".format(acc_test_eval_gb))
+    file_log.write("Global Testing accuracy: {:.5f}\n".format(acc_test_eval_gb))
     # logging.info("Global Testing accuracy: {:.2f}".format(acc_test_eval_gb))
 
 # 保存模型
 #     torch.save(net_glob.state_dict(), 'bert_model.bin'
-    torch.save(net_glob.state_dict(), './save/bert_model_fed_{}_{}_{}_lr_{}_iid{}_userNum{}.bin'.format(args.dataset, args.model, args.epochs, args.lr, args.iid,
+    torch.save(net_glob.state_dict(), './save/bert_model_{}_{}_{}_{}_lr_{}_iid{}_userNum{}.bin'.format(args.fedAlg,args.dataset, args.model, args.epochs, args.lr, args.iid,
                                                          args.num_users))
 
     file_log.close()
